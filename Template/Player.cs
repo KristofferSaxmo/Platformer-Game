@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace Template
+namespace Platformer
 {
     class Player : BaseClass
     {
@@ -55,10 +55,10 @@ namespace Template
             if (keyboardState.IsKeyUp(Keys.Space) && doubleJumpTime != 20) // Disallow double jump
                 allowDoubleJump = false;
 
-            if (velocity.X > 4)
+            if (velocity.X > 4) // X Velocity not bigger than 4
                 velocity.X = 4;
 
-            else if (velocity.X < -4)
+            else if (velocity.X < -4) // X Velocity not smaller than -4
                 velocity.X = -4;
 
             if (velocity.X < 0)
@@ -70,19 +70,9 @@ namespace Template
             if (velocity.X < 0.1f && velocity.X > -0.1f)
                 velocity.X = 0;
         }
-        public void MirrorMap()
+        public override void MirrorMap()
         {
-            if (position.X < 0 - rectangle.Width)
-                position.X = 1920;
-
-            else if (position.X > 1920)
-                position.X = 0 - rectangle.Width;
-
-            if (position.Y < 0 - rectangle.Height)
-                position.Y = 1080;
-
-            else if (position.Y > 1080)
-                position.Y = 0 - rectangle.Height;
+            base.MirrorMap();
         }
         public void FloorCollision()
         {
@@ -111,13 +101,15 @@ namespace Template
         {
             MovePlayer();
             MirrorMap();
+
             velocity.Y += 9.82f * 1f / 60f; // Gravitation
             if (velocity.Y > 20)
                 velocity.Y = 20;
+
             position.Y += velocity.Y; // Y Velocity --> Y Position
             position.X += velocity.X; // X Velocity --> X Position
 
-            rectangle = new Rectangle(position.ToPoint(), rectangle.Size); // Rectangle --> Position
+            rectangle = new Rectangle(position.ToPoint(), rectangle.Size); // Rectangle = Position
         }
         public override void Draw(SpriteBatch spriteBatch)
         {

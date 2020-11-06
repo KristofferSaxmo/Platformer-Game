@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Template
+namespace Platformer
 {
     class BaseClass
     {
@@ -27,5 +27,19 @@ namespace Template
 
         public virtual void Update() { }
         public virtual void Draw(SpriteBatch spriteBatch) { }
+        public virtual void MirrorMap()
+        {
+            if (position.X < 0 - rectangle.Width)
+                position.X = 1920;
+
+            else if (position.X > 1920)
+                position.X = 0 - rectangle.Width;
+
+            if (position.Y < 0 - rectangle.Height)
+                position.Y = 1080;
+
+            else if (position.Y > 1080)
+                position.Y = 0 - rectangle.Height;
+        }
     }
 }

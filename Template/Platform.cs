@@ -6,15 +6,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Template
+namespace Platformer
 {
     class Platform : BaseClass
     {
-        public Platform(Texture2D texture, Vector2 position, Point size)
+        public Platform(Texture2D platformTex, Vector2 platformPos, Point size)
         {
-            this.texture = texture;
-            base.position = position;
-            rectangle = new Rectangle(position.ToPoint(), size);
+            texture = platformTex;
+            position = platformPos;
+            rectangle = new Rectangle(platformPos.ToPoint(), size);
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
