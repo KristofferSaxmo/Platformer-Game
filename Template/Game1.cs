@@ -12,9 +12,13 @@ namespace Platformer
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Player player;
+        Gun rightGun, leftGun;
         List<Platform> platforms = new List<Platform>();
         Vector2 oldPlayerPos = Vector2.Zero;
         Random random = new Random();
+        Texture2D crosshairTex, gunRightTex, gunLeftTex;
+        MouseState mouseState;
+        KeyboardState keyboardState;
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -33,32 +37,41 @@ namespace Platformer
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            crosshairTex = Content.Load<Texture2D>("crosshair");
+            gunRightTex = Content.Load<Texture2D>("gunRight");
+            gunLeftTex = Content.Load<Texture2D>("gunLeft");
+
             Texture2D t = new Texture2D(GraphicsDevice, 1, 1);
             t.SetData(new Color[1] { Color.White });
-            player = new Player(t, new Vector2(500, 100), new Point(20, 20));
-            platforms.Add(new Platform(t, new Vector2(random.Next(50, 200), random.Next(100, 200)), new Point(random.Next(150, 350), 30)));
-            platforms.Add(new Platform(t, new Vector2(random.Next(650, 850), random.Next(100, 200)), new Point(random.Next(150, 350), 30)));
-            platforms.Add(new Platform(t, new Vector2(random.Next(1300, 1500), random.Next(100, 200)), new Point(random.Next(150, 350), 30)));
 
-            platforms.Add(new Platform(t, new Vector2(random.Next(325, 525), random.Next(250, 350)), new Point(random.Next(150, 350), 30)));
-            platforms.Add(new Platform(t, new Vector2(random.Next(975, 1175), random.Next(250, 350)), new Point(random.Next(150, 350), 30)));
-            platforms.Add(new Platform(t, new Vector2(random.Next(1625, 1825), random.Next(250, 350)), new Point(random.Next(150, 350), 30)));
+            player = new Player(t, new Vector2(500, 100), new Point(30, 30));
+            rightGun = new Gun(gunRightTex, new Vector2(500, 100));
+            leftGun = new Gun(gunLeftTex, new Vector2(500, 100));
 
-            platforms.Add(new Platform(t, new Vector2(random.Next(50, 200),  random.Next(400, 500)), new Point(random.Next(150, 350), 30)));
-            platforms.Add(new Platform(t, new Vector2(random.Next(650, 850), random.Next(400, 500)), new Point(random.Next(150, 350), 30)));
-            platforms.Add(new Platform(t, new Vector2(random.Next(1300, 1500), random.Next(400, 500)), new Point(random.Next(150, 350), 30)));
-
-            platforms.Add(new Platform(t, new Vector2(random.Next(325, 525), random.Next(550, 650)), new Point(random.Next(150, 350), 30)));
-            platforms.Add(new Platform(t, new Vector2(random.Next(975, 1175), random.Next(550, 650)), new Point(random.Next(150, 350), 30)));
-            platforms.Add(new Platform(t, new Vector2(random.Next(1625, 1825), random.Next(550, 650)), new Point(random.Next(150, 350), 30)));
-
-            platforms.Add(new Platform(t, new Vector2(random.Next(50, 200),  random.Next(700, 800)), new Point(random.Next(150, 350), 30)));
-            platforms.Add(new Platform(t, new Vector2(random.Next(650, 850), random.Next(700, 800)), new Point(random.Next(150, 350), 30)));
-            platforms.Add(new Platform(t, new Vector2(random.Next(1300, 1500), random.Next(700, 800)), new Point(random.Next(150, 350), 30)));
-
-            platforms.Add(new Platform(t, new Vector2(random.Next(325, 525), random.Next(850, 950)), new Point(random.Next(150, 350), 30)));
-            platforms.Add(new Platform(t, new Vector2(random.Next(975, 1175), random.Next(850, 950)), new Point(random.Next(150, 350), 30)));
-            platforms.Add(new Platform(t, new Vector2(random.Next(1625, 1825), random.Next(850, 950)), new Point(random.Next(150, 350), 30)));
+            platforms.Add(new Platform(t, new Vector2(random.Next(50, 200), random.Next(100, 200)), new Point(random.Next(150, 350), 30)));           // Platforms
+            platforms.Add(new Platform(t, new Vector2(random.Next(650, 850), random.Next(100, 200)), new Point(random.Next(150, 350), 30)));          // Platforms
+            platforms.Add(new Platform(t, new Vector2(random.Next(1300, 1500), random.Next(100, 200)), new Point(random.Next(150, 350), 30)));        // Platforms
+                                                                                                                                                      // Platforms
+            platforms.Add(new Platform(t, new Vector2(random.Next(325, 525), random.Next(250, 350)), new Point(random.Next(150, 350), 30)));          // Platforms
+            platforms.Add(new Platform(t, new Vector2(random.Next(975, 1175), random.Next(250, 350)), new Point(random.Next(150, 350), 30)));         // Platforms
+            platforms.Add(new Platform(t, new Vector2(random.Next(1625, 1825), random.Next(250, 350)), new Point(random.Next(150, 350), 30)));        // Platforms
+                                                                                                                                                      // Platforms
+            platforms.Add(new Platform(t, new Vector2(random.Next(50, 200),  random.Next(400, 500)), new Point(random.Next(150, 350), 30)));          // Platforms
+            platforms.Add(new Platform(t, new Vector2(random.Next(650, 850), random.Next(400, 500)), new Point(random.Next(150, 350), 30)));          // Platforms
+            platforms.Add(new Platform(t, new Vector2(random.Next(1300, 1500), random.Next(400, 500)), new Point(random.Next(150, 350), 30)));        // Platforms
+                                                                                                                                                      // Platforms
+            platforms.Add(new Platform(t, new Vector2(random.Next(325, 525), random.Next(550, 650)), new Point(random.Next(150, 350), 30)));          // Platforms
+            platforms.Add(new Platform(t, new Vector2(random.Next(975, 1175), random.Next(550, 650)), new Point(random.Next(150, 350), 30)));         // Platforms
+            platforms.Add(new Platform(t, new Vector2(random.Next(1625, 1825), random.Next(550, 650)), new Point(random.Next(150, 350), 30)));        // Platforms
+                                                                                                                                                      // Platforms
+            platforms.Add(new Platform(t, new Vector2(random.Next(50, 200),  random.Next(700, 800)), new Point(random.Next(150, 350), 30)));          // Platforms
+            platforms.Add(new Platform(t, new Vector2(random.Next(650, 850), random.Next(700, 800)), new Point(random.Next(150, 350), 30)));          // Platforms
+            platforms.Add(new Platform(t, new Vector2(random.Next(1300, 1500), random.Next(700, 800)), new Point(random.Next(150, 350), 30)));        // Platforms
+                                                                                                                                                      // Platforms
+            platforms.Add(new Platform(t, new Vector2(random.Next(325, 525), random.Next(850, 950)), new Point(random.Next(150, 350), 30)));          // Platforms
+            platforms.Add(new Platform(t, new Vector2(random.Next(975, 1175), random.Next(850, 950)), new Point(random.Next(150, 350), 30)));         // Platforms
+            platforms.Add(new Platform(t, new Vector2(random.Next(1625, 1825), random.Next(850, 950)), new Point(random.Next(150, 350), 30)));        // Platforms
         }
         
         protected override void UnloadContent() { }
@@ -94,7 +107,8 @@ namespace Platformer
         }
         protected override void Update(GameTime gameTime)
         {
-            var keyboardState = Keyboard.GetState();
+             keyboardState = Keyboard.GetState();
+             mouseState = Mouse.GetState();
 
             if (keyboardState.IsKeyDown(Keys.Escape))
                 Exit();
@@ -103,6 +117,11 @@ namespace Platformer
 
             player.Update();
 
+            rightGun.ChangePosition(player.Position);
+            rightGun.Update();
+            leftGun.ChangePosition(player.Position);
+            leftGun.Update();
+
             PlatformCollision();
 
             base.Update(gameTime);
@@ -110,6 +129,7 @@ namespace Platformer
 
         protected override void Draw(GameTime gameTime)
         {
+
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             spriteBatch.Begin();
@@ -118,7 +138,15 @@ namespace Platformer
             {
                 platforms.Draw(spriteBatch);
             }
+
             player.Draw(spriteBatch);
+
+            if (mouseState.X > player.Position.X + 15)
+                rightGun.DrawRight(spriteBatch);
+            else
+                leftGun.DrawLeft(spriteBatch);
+
+            spriteBatch.Draw(crosshairTex, new Vector2(mouseState.X, mouseState.Y), Color.White);
 
             spriteBatch.End();
 

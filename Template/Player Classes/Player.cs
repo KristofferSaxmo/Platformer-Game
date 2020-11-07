@@ -99,6 +99,7 @@ namespace Platformer
 
         public override void Update()
         {
+            var mouseState = Mouse.GetState();
             MovePlayer();
             MirrorMap();
 
@@ -110,6 +111,7 @@ namespace Platformer
             position.X += velocity.X; // X Velocity --> X Position
 
             rectangle = new Rectangle(position.ToPoint(), rectangle.Size); // Rectangle = Position
+
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
