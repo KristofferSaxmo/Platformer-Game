@@ -12,7 +12,8 @@ namespace Platformer
         SpriteBatch spriteBatch;
 
         Player player;
-        Gun rightGun, leftGun;
+        Glasses leftGlasses, rightGlasses;
+        Gun leftGun, rightGun;
         readonly List<Platform> platforms = new List<Platform>();
         readonly List<Bullet> bullets = new List<Bullet>();
         int bulletCooldown = 0;
@@ -22,10 +23,10 @@ namespace Platformer
 
         Vector2 oldPlayerPos = Vector2.Zero;
         readonly Random random = new Random();
-        Texture2D crosshairTex, gunRightTex, gunLeftTex, bulletTex;
+        Texture2D crosshairTex, gunRightTex, gunLeftTex, bulletTex, glassesRightTex, glassesLeftTex;
         MouseState mouseState;
         KeyboardState keyboardState;
-        bool isGunLeft;
+        bool isTurnedLeft;
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -48,12 +49,16 @@ namespace Platformer
             crosshairTex = Content.Load<Texture2D>("crosshair");
             gunRightTex = Content.Load<Texture2D>("gunRight");
             gunLeftTex = Content.Load<Texture2D>("gunLeft");
+            glassesRightTex = Content.Load<Texture2D>("glassesRight");
+            glassesLeftTex = Content.Load<Texture2D>("glassesLeft");
             bulletTex = Content.Load<Texture2D>("bullet");
 
             Texture2D t = new Texture2D(GraphicsDevice, 1, 1);
             t.SetData(new Color[1] { Color.White });
 
             player = new Player(t, new Vector2(500, 100), new Point(30, 30));
+            leftGlasses = new Glasses(glassesLeftTex, new Vector2(500, 100));
+            rightGlasses = new Glasses(glassesRightTex, new Vector2(500, 100));
             rightGun = new Gun(gunRightTex, new Vector2(500, 100));
             leftGun = new Gun(gunLeftTex, new Vector2(500, 100));
 
@@ -130,23 +135,27 @@ namespace Platformer
                 Exit();
 
             if (mouseState.X < player.Position.X + 15)
-                isGunLeft = true;
+                isTurnedLeft = true;
             else
-                isGunLeft = false;
+                isTurnedLeft = false;
 
                 oldPlayerPos = player.Position;
 
             player.Update();
+            if (isTurnedLeft == true)
+                leftGlasses.UpdatePos(new Vector2(player.Position.X, player.Position.Y + 4));
+            else
+                rightGlasses.UpdatePos(new Vector2(player.Position.X - 4, player.Position.Y + 4));
 
-            rightGun.ChangePosition(player.Position);
+            rightGun.UpdatePos(player.Position);
             rightGun.Update();
 
-            leftGun.ChangePosition(player.Position);
+            leftGun.UpdatePos(player.Position);
             leftGun.Update();
 
             PlatformCollision();
 
-            if (mouseState.LeftButton == ButtonState.Pressed && isGunLeft == true && bulletCooldown == 0) // Shoot Left
+            if (mouseState.LeftButton == ButtonState.Pressed && isTurnedLeft == true && bulletCooldown == 0) // Shoot Left
             {
                 bulletCooldown = 30;
 
@@ -165,7 +174,7 @@ namespace Platformer
                                 (float)Math.Sin(bulletRot)))); // Direction
             }
 
-            else if (mouseState.LeftButton == ButtonState.Pressed && isGunLeft == false && bulletCooldown == 0) // Shoot Right
+            else if (mouseState.LeftButton == ButtonState.Pressed && isTurnedLeft == false && bulletCooldown == 0) // Shoot Right
             {
                 bulletCooldown = 30;
 
@@ -198,28 +207,36 @@ namespace Platformer
         protected override void Draw(GameTime gameTime)
         {
 
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.CornflowerBlue); // Draw background
 
             spriteBatch.Begin();
 
-            foreach (Platform platforms in platforms)
-            {
-                platforms.Draw(spriteBatch);
-            }
-
-            foreach (Bullet bullets in bullets)
+            foreach (Bullet bullets in bullets) // Draw bullets
             {
                 bullets.Draw(spriteBatch);
             }
 
-            player.Draw(spriteBatch);
+            foreach (Platform platforms in platforms) // Draw platforms
+            {
+                platforms.Draw(spriteBatch);
+            }
 
-            if (isGunLeft == true)
+            player.Draw(spriteBatch); // Draw player
+
+
+
+            if (isTurnedLeft == true)
+            {
+                leftGlasses.Draw(spriteBatch);
                 leftGun.DrawLeft(spriteBatch);
+            }
             else
+            {
+                rightGlasses.Draw(spriteBatch);
                 rightGun.DrawRight(spriteBatch);
+            }
 
-            spriteBatch.Draw(crosshairTex, new Vector2(mouseState.X - 10, mouseState.Y - 10), Color.White);
+            spriteBatch.Draw(crosshairTex, new Vector2(mouseState.X - 10, mouseState.Y - 10), Color.White); // Draw crosshair
 
             spriteBatch.End();
 

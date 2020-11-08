@@ -25,7 +25,7 @@ namespace Platformer
             texture = gunTex;
             position = gunPos;
         }
-        public void ChangePosition(Vector2 playerPos)
+        public void UpdatePos(Vector2 playerPos)
         {
             position = playerPos;
         }

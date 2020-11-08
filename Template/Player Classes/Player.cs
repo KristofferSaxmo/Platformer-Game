@@ -116,5 +116,13 @@ namespace Platformer
         {
             spriteBatch.Draw(texture, rectangle, Color.White);
         }
+        public void DrawRightGlasses(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(texture, new Vector2(Position.X - 8, Position.Y + 12), Color.White);
+        }
+        public void DrawLeftGlasses(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(texture, new Vector2(Position.X + 22, Position.Y + 12), Color.White);
+        }
     }
 }
