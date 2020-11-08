@@ -216,11 +216,32 @@ namespace Platformer
 
             if (bulletCooldown > 0) // Bullet cooldown
                 bulletCooldown--;
-
-            if (random.Next(120) == 1) // Spawn Chance                                                                                       // Add enemies
+                                                                                                                                             // Add enemies
+            if (random.Next(300) == 1) // Spawn Chance                                                                                       // Up
                 enemies.Add(new Enemy(
                     defaultTex, // Texture
                     new Vector2(random.Next(1920), -100), // Position
+                    new Point(30, 30), // Size
+                    random.Next(2, 6) * 1f / 60f)); // Speed
+
+            if (random.Next(300) == 1) // Spawn Chance                                                                                       // Left
+                enemies.Add(new Enemy(
+                    defaultTex, // Texture
+                    new Vector2(-100, random.Next(1080)), // Position
+                    new Point(30, 30), // Size
+                    random.Next(2, 6) * 1f / 60f)); // Speed
+
+            if (random.Next(300) == 1) // Spawn Chance                                                                                       // Right
+                enemies.Add(new Enemy(
+                    defaultTex, // Texture
+                    new Vector2(2020, random.Next(1080)), // Position
+                    new Point(30, 30), // Size
+                    random.Next(2, 6) * 1f / 60f)); // Speed
+
+            if (random.Next(300) == 1) // Spawn Chance                                                                                       // Down
+                enemies.Add(new Enemy(
+                    defaultTex, // Texture
+                    new Vector2(random.Next(1920), 1180), // Position
                     new Point(30, 30), // Size
                     random.Next(2, 6) * 1f / 60f)); // Speed
 
