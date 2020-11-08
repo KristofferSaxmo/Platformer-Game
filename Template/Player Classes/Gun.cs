@@ -12,13 +12,13 @@ namespace Platformer
     class Gun : BaseClass
     {
         Vector2 distance;
-        Vector2 rightOrigin = Vector2.Zero;
-        Vector2 leftOrigin = new Vector2(26, 0);
+        Vector2 rightOrigin = new Vector2(0, 8);
+        Vector2 leftOrigin = new Vector2(26, 8);
 
         float leftRotation;
         float rightRotation;
 
-        Rectangle sourceRectangle;
+        Rectangle sourceRectangle = new Rectangle(0, 0, 26, 16);
 
         public Gun(Texture2D gunTex, Vector2 gunPos)
         {
@@ -35,20 +35,19 @@ namespace Platformer
 
             distance.X = mouseState.X - position.X;
             distance.Y = mouseState.Y - position.Y;
+            distance.Normalize();
 
             leftRotation = (float)Math.Atan2(0 - distance.Y, 0 - distance.X);   // Left angle
             rightRotation = (float)Math.Atan2(distance.Y, distance.X);          // Right angle
 
-            sourceRectangle = new Rectangle(0, 0, texture.Width, texture.Height);
-
         }
         public void DrawRight(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, position, sourceRectangle, Color.White, rightRotation, rightOrigin, 1.0f, SpriteEffects.None, 1);
+            spriteBatch.Draw(texture, new Vector2(position.X + 20, position.Y + 12), sourceRectangle, Color.White, rightRotation, rightOrigin, 1.0f, SpriteEffects.None, 1);
         }
         public void DrawLeft(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, new Vector2(position.X + 30, position.Y), sourceRectangle, Color.White, leftRotation, leftOrigin, 1.0f, SpriteEffects.None, 1);
+            spriteBatch.Draw(texture, new Vector2(position.X + 10, position.Y + 12), sourceRectangle, Color.White, leftRotation, leftOrigin, 1.0f, SpriteEffects.None, 1);
         }
     }
 }

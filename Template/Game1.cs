@@ -3,22 +3,29 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Platformer
 {
     public class Game1 : Game
     {
-        GraphicsDeviceManager graphics;
+        readonly GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+
         Player player;
         Gun rightGun, leftGun;
-        List<Platform> platforms = new List<Platform>();
+        readonly List<Platform> platforms = new List<Platform>();
+        readonly List<Bullet> bullets = new List<Bullet>();
+        int bulletCooldown = 0;
+
+        float bulletRot;
+        Vector2 bulletDir;
+
         Vector2 oldPlayerPos = Vector2.Zero;
-        Random random = new Random();
-        Texture2D crosshairTex, gunRightTex, gunLeftTex;
+        readonly Random random = new Random();
+        Texture2D crosshairTex, gunRightTex, gunLeftTex, bulletTex;
         MouseState mouseState;
         KeyboardState keyboardState;
+        bool isGunLeft;
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -41,6 +48,7 @@ namespace Platformer
             crosshairTex = Content.Load<Texture2D>("crosshair");
             gunRightTex = Content.Load<Texture2D>("gunRight");
             gunLeftTex = Content.Load<Texture2D>("gunLeft");
+            bulletTex = Content.Load<Texture2D>("bullet");
 
             Texture2D t = new Texture2D(GraphicsDevice, 1, 1);
             t.SetData(new Color[1] { Color.White });
@@ -113,16 +121,68 @@ namespace Platformer
             if (keyboardState.IsKeyDown(Keys.Escape))
                 Exit();
 
-            oldPlayerPos = player.Position;
+            if (mouseState.X < player.Position.X + 15)
+                isGunLeft = true;
+            else
+                isGunLeft = false;
+
+                oldPlayerPos = player.Position;
 
             player.Update();
 
             rightGun.ChangePosition(player.Position);
             rightGun.Update();
+
             leftGun.ChangePosition(player.Position);
             leftGun.Update();
 
             PlatformCollision();
+
+            if (mouseState.LeftButton == ButtonState.Pressed && isGunLeft == true && bulletCooldown == 0) // Shoot Left
+            {
+                bulletCooldown = 30;
+
+                bulletDir.X = mouseState.X - leftGun.Position.X;
+                bulletDir.Y = mouseState.Y - leftGun.Position.Y;
+                bulletDir.Normalize();
+
+                bulletRot = (float)Math.Atan2(bulletDir.Y, bulletDir.X);
+
+                bullets.Add(new Bullet(
+                    bulletTex, // Texture
+                    leftGun.Position, // Position
+                    new Point(18, 8), // Size
+                    (float)Math.Atan2(bulletDir.Y, bulletDir.X), // Rotation
+                    new Vector2((float)Math.Cos(bulletRot),
+                                (float)Math.Sin(bulletRot)))); // Direction
+            }
+
+            else if (mouseState.LeftButton == ButtonState.Pressed && isGunLeft == false && bulletCooldown == 0) // Shoot Right
+            {
+                bulletCooldown = 30;
+
+                bulletDir.X = mouseState.X - rightGun.Position.X - 26;
+                bulletDir.Y = mouseState.Y - rightGun.Position.Y;
+                bulletDir.Normalize();
+
+                bulletRot = (float)Math.Atan2(bulletDir.Y, bulletDir.X);
+
+                bullets.Add(new Bullet(
+                    bulletTex, // Texture
+                    new Vector2(rightGun.Position.X + 26, rightGun.Position.Y), // Position
+                    new Point(18, 8), // Size
+                    (float)Math.Atan2(bulletDir.Y, bulletDir.X), // Rotation
+                    new Vector2((float)Math.Cos(bulletRot),
+                                (float)Math.Sin(bulletRot)))); // Direction
+            }
+
+            if (bulletCooldown > 0)
+                bulletCooldown--;
+
+            foreach (Bullet bullets in bullets)
+            {
+                bullets.Move();
+            }
 
             base.Update(gameTime);
         }
@@ -139,14 +199,19 @@ namespace Platformer
                 platforms.Draw(spriteBatch);
             }
 
+            foreach (Bullet bullets in bullets)
+            {
+                bullets.Draw(spriteBatch);
+            }
+
             player.Draw(spriteBatch);
 
-            if (mouseState.X > player.Position.X + 15)
-                rightGun.DrawRight(spriteBatch);
-            else
+            if (isGunLeft == true)
                 leftGun.DrawLeft(spriteBatch);
+            else
+                rightGun.DrawRight(spriteBatch);
 
-            spriteBatch.Draw(crosshairTex, new Vector2(mouseState.X, mouseState.Y), Color.White);
+            spriteBatch.Draw(crosshairTex, new Vector2(mouseState.X - 10, mouseState.Y - 10), Color.White);
 
             spriteBatch.End();
 

@@ -99,7 +99,6 @@ namespace Platformer
 
         public override void Update()
         {
-            var mouseState = Mouse.GetState();
             MovePlayer();
             MirrorMap();
 

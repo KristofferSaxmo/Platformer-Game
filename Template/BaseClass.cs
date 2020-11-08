@@ -13,6 +13,8 @@ namespace Platformer
         protected Texture2D texture;
         protected Vector2 position;
         protected Rectangle rectangle;
+        protected float rotation;
+        protected Vector2 direction;
 
         public Rectangle Rectangle
         {
@@ -24,7 +26,16 @@ namespace Platformer
             get { return position; }
             set { position = value; }
         }
-
+        public float Rotation
+        {
+            get { return rotation; }
+            set { rotation = value; }
+        }
+        public Vector2 Direction
+        {
+            get { return direction; }
+            set { direction = value; }
+        }
         public virtual void Update() { }
         public virtual void Draw(SpriteBatch spriteBatch) { }
         public virtual void MirrorMap()
