@@ -25,6 +25,8 @@ namespace Platformer
         public void Move()
         {
             position += direction * speed;
+
+            rectangle = new Rectangle(position.ToPoint(), rectangle.Size);
         }
         public override void Draw(SpriteBatch spriteBatch)
         {

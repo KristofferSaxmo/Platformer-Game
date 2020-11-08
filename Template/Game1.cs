@@ -86,30 +86,38 @@ namespace Platformer
 
         public void PlatformCollision()
         {
-            for (int i = 0; i < platforms.Count; i++)
+            foreach (Platform platforms in platforms)
             {
-                if (player.Rectangle.Intersects(platforms[i].Rectangle) && oldPlayerPos.X + player.Rectangle.Width < platforms[i].Position.X) // Platform 1 Left Wall
+                if (player.Rectangle.Intersects(platforms.Rectangle) && oldPlayerPos.X + player.Rectangle.Width < platforms.Position.X) // Player collision with left wall
                 {
                     player.WallCollision();
-                    player.Position = new Vector2(platforms[i].Position.X - player.Rectangle.Width - 1, player.Position.Y);
+                    player.Position = new Vector2(platforms.Position.X - player.Rectangle.Width - 1, player.Position.Y);
                 }
 
-                else if (player.Rectangle.Intersects(platforms[i].Rectangle) && oldPlayerPos.X > platforms[i].Position.X + platforms[i].Rectangle.Width) // Platform 1 Rigth Wall
+                else if (player.Rectangle.Intersects(platforms.Rectangle) && oldPlayerPos.X > platforms.Position.X + platforms.Rectangle.Width) // Player collision with right wall
                 {
                     player.WallCollision();
-                    player.Position = new Vector2(platforms[i].Position.X + platforms[i].Rectangle.Width + 1, player.Position.Y);
+                    player.Position = new Vector2(platforms.Position.X + platforms.Rectangle.Width + 1, player.Position.Y);
                 }
 
-                else if (player.Rectangle.Intersects(platforms[i].Rectangle) && oldPlayerPos.Y < platforms[i].Position.Y) // Platform 1 Floor
+                else if (player.Rectangle.Intersects(platforms.Rectangle) && oldPlayerPos.Y < platforms.Position.Y) // Player collision with floor
                 {
                     player.FloorCollision();
-                    player.Position = new Vector2(player.Position.X, platforms[i].Position.Y - player.Rectangle.Height + 1);
+                    player.Position = new Vector2(player.Position.X, platforms.Position.Y - player.Rectangle.Height + 1);
                 }
 
-                else if (player.Rectangle.Intersects(platforms[i].Rectangle) && oldPlayerPos.Y + player.Rectangle.Height > platforms[i].Position.Y + platforms[i].Rectangle.Height) // Platform 1 Ceiling
+                else if (player.Rectangle.Intersects(platforms.Rectangle) && oldPlayerPos.Y + player.Rectangle.Height > platforms.Position.Y + platforms.Rectangle.Height) // Player collision with ceiling
                 {
                     player.RoofCollision();
-                    player.Position = new Vector2(player.Position.X, platforms[i].Position.Y + platforms[i].Rectangle.Height);
+                    player.Position = new Vector2(player.Position.X, platforms.Position.Y + platforms.Rectangle.Height);
+                }
+
+                for (int i = 0; i < bullets.Count; i++) // Bullet collision
+                {
+                    if (bullets[i].Rectangle.Intersects(platforms.Rectangle))
+                    {
+                        bullets.RemoveAt(i);
+                    }
                 }
             }
         }
