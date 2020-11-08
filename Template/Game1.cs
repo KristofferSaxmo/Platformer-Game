@@ -16,6 +16,7 @@ namespace Platformer
         Gun leftGun, rightGun;
         readonly List<Platform> platforms = new List<Platform>();
         readonly List<Bullet> bullets = new List<Bullet>();
+        readonly List<Enemy> enemies = new List<Enemy>();
         int bulletCooldown = 0;
 
         float bulletRot;
@@ -23,7 +24,7 @@ namespace Platformer
 
         Vector2 oldPlayerPos = Vector2.Zero;
         readonly Random random = new Random();
-        Texture2D crosshairTex, gunRightTex, gunLeftTex, bulletTex, glassesRightTex, glassesLeftTex;
+        Texture2D defaultTex, crosshairTex, gunRightTex, gunLeftTex, bulletTex, glassesRightTex, glassesLeftTex;
         MouseState mouseState;
         KeyboardState keyboardState;
         bool isTurnedLeft;
@@ -53,43 +54,43 @@ namespace Platformer
             glassesLeftTex = Content.Load<Texture2D>("glassesLeft");
             bulletTex = Content.Load<Texture2D>("bullet");
 
-            Texture2D t = new Texture2D(GraphicsDevice, 1, 1);
-            t.SetData(new Color[1] { Color.White });
+            defaultTex = new Texture2D(GraphicsDevice, 1, 1);
+            defaultTex.SetData(new Color[1] { Color.White });
 
-            player = new Player(t, new Vector2(500, 100), new Point(30, 30));
+            player = new Player(defaultTex, new Vector2(500, 100), new Point(30, 30));
             leftGlasses = new Glasses(glassesLeftTex, new Vector2(500, 100));
             rightGlasses = new Glasses(glassesRightTex, new Vector2(500, 100));
             rightGun = new Gun(gunRightTex, new Vector2(500, 100));
             leftGun = new Gun(gunLeftTex, new Vector2(500, 100));
 
-            platforms.Add(new Platform(t, new Vector2(random.Next(50, 200), random.Next(100, 200)), new Point(random.Next(150, 350), 30)));           // Platforms
-            platforms.Add(new Platform(t, new Vector2(random.Next(650, 850), random.Next(100, 200)), new Point(random.Next(150, 350), 30)));          // Platforms
-            platforms.Add(new Platform(t, new Vector2(random.Next(1300, 1500), random.Next(100, 200)), new Point(random.Next(150, 350), 30)));        // Platforms
+            platforms.Add(new Platform(defaultTex, new Vector2(random.Next(50, 200), random.Next(100, 200)), new Point(random.Next(150, 350), 30)));           // Platforms
+            platforms.Add(new Platform(defaultTex, new Vector2(random.Next(650, 850), random.Next(100, 200)), new Point(random.Next(150, 350), 30)));          // Platforms
+            platforms.Add(new Platform(defaultTex, new Vector2(random.Next(1300, 1500), random.Next(100, 200)), new Point(random.Next(150, 350), 30)));        // Platforms
                                                                                                                                                       // Platforms
-            platforms.Add(new Platform(t, new Vector2(random.Next(325, 525), random.Next(250, 350)), new Point(random.Next(150, 350), 30)));          // Platforms
-            platforms.Add(new Platform(t, new Vector2(random.Next(975, 1175), random.Next(250, 350)), new Point(random.Next(150, 350), 30)));         // Platforms
-            platforms.Add(new Platform(t, new Vector2(random.Next(1625, 1825), random.Next(250, 350)), new Point(random.Next(150, 350), 30)));        // Platforms
+            platforms.Add(new Platform(defaultTex, new Vector2(random.Next(325, 525), random.Next(250, 350)), new Point(random.Next(150, 350), 30)));          // Platforms
+            platforms.Add(new Platform(defaultTex, new Vector2(random.Next(975, 1175), random.Next(250, 350)), new Point(random.Next(150, 350), 30)));         // Platforms
+            platforms.Add(new Platform(defaultTex, new Vector2(random.Next(1625, 1825), random.Next(250, 350)), new Point(random.Next(150, 350), 30)));        // Platforms
                                                                                                                                                       // Platforms
-            platforms.Add(new Platform(t, new Vector2(random.Next(50, 200),  random.Next(400, 500)), new Point(random.Next(150, 350), 30)));          // Platforms
-            platforms.Add(new Platform(t, new Vector2(random.Next(650, 850), random.Next(400, 500)), new Point(random.Next(150, 350), 30)));          // Platforms
-            platforms.Add(new Platform(t, new Vector2(random.Next(1300, 1500), random.Next(400, 500)), new Point(random.Next(150, 350), 30)));        // Platforms
+            platforms.Add(new Platform(defaultTex, new Vector2(random.Next(50, 200),  random.Next(400, 500)), new Point(random.Next(150, 350), 30)));          // Platforms
+            platforms.Add(new Platform(defaultTex, new Vector2(random.Next(650, 850), random.Next(400, 500)), new Point(random.Next(150, 350), 30)));          // Platforms
+            platforms.Add(new Platform(defaultTex, new Vector2(random.Next(1300, 1500), random.Next(400, 500)), new Point(random.Next(150, 350), 30)));        // Platforms
                                                                                                                                                       // Platforms
-            platforms.Add(new Platform(t, new Vector2(random.Next(325, 525), random.Next(550, 650)), new Point(random.Next(150, 350), 30)));          // Platforms
-            platforms.Add(new Platform(t, new Vector2(random.Next(975, 1175), random.Next(550, 650)), new Point(random.Next(150, 350), 30)));         // Platforms
-            platforms.Add(new Platform(t, new Vector2(random.Next(1625, 1825), random.Next(550, 650)), new Point(random.Next(150, 350), 30)));        // Platforms
+            platforms.Add(new Platform(defaultTex, new Vector2(random.Next(325, 525), random.Next(550, 650)), new Point(random.Next(150, 350), 30)));          // Platforms
+            platforms.Add(new Platform(defaultTex, new Vector2(random.Next(975, 1175), random.Next(550, 650)), new Point(random.Next(150, 350), 30)));         // Platforms
+            platforms.Add(new Platform(defaultTex, new Vector2(random.Next(1625, 1825), random.Next(550, 650)), new Point(random.Next(150, 350), 30)));        // Platforms
                                                                                                                                                       // Platforms
-            platforms.Add(new Platform(t, new Vector2(random.Next(50, 200),  random.Next(700, 800)), new Point(random.Next(150, 350), 30)));          // Platforms
-            platforms.Add(new Platform(t, new Vector2(random.Next(650, 850), random.Next(700, 800)), new Point(random.Next(150, 350), 30)));          // Platforms
-            platforms.Add(new Platform(t, new Vector2(random.Next(1300, 1500), random.Next(700, 800)), new Point(random.Next(150, 350), 30)));        // Platforms
+            platforms.Add(new Platform(defaultTex, new Vector2(random.Next(50, 200),  random.Next(700, 800)), new Point(random.Next(150, 350), 30)));          // Platforms
+            platforms.Add(new Platform(defaultTex, new Vector2(random.Next(650, 850), random.Next(700, 800)), new Point(random.Next(150, 350), 30)));          // Platforms
+            platforms.Add(new Platform(defaultTex, new Vector2(random.Next(1300, 1500), random.Next(700, 800)), new Point(random.Next(150, 350), 30)));        // Platforms
                                                                                                                                                       // Platforms
-            platforms.Add(new Platform(t, new Vector2(random.Next(325, 525), random.Next(850, 950)), new Point(random.Next(150, 350), 30)));          // Platforms
-            platforms.Add(new Platform(t, new Vector2(random.Next(975, 1175), random.Next(850, 950)), new Point(random.Next(150, 350), 30)));         // Platforms
-            platforms.Add(new Platform(t, new Vector2(random.Next(1625, 1825), random.Next(850, 950)), new Point(random.Next(150, 350), 30)));        // Platforms
+            platforms.Add(new Platform(defaultTex, new Vector2(random.Next(325, 525), random.Next(850, 950)), new Point(random.Next(150, 350), 30)));          // Platforms
+            platforms.Add(new Platform(defaultTex, new Vector2(random.Next(975, 1175), random.Next(850, 950)), new Point(random.Next(150, 350), 30)));         // Platforms
+            platforms.Add(new Platform(defaultTex, new Vector2(random.Next(1625, 1825), random.Next(850, 950)), new Point(random.Next(150, 350), 30)));        // Platforms
         }
         
         protected override void UnloadContent() { }
 
-        public void PlatformCollision()
+        public void Collision()
         {
             foreach (Platform platforms in platforms)
             {
@@ -119,10 +120,29 @@ namespace Platformer
 
                 for (int i = 0; i < bullets.Count; i++) // Bullet collision
                 {
-                    if (bullets[i].Rectangle.Intersects(platforms.Rectangle))
+                    if (bullets[i].Rectangle.Intersects(platforms.Rectangle)) // Bullet & Platform collision
                     {
                         bullets.RemoveAt(i);
+                        i--;
                     }
+
+                    else
+                        for (int j = 0; j < enemies.Count; j++)
+                        {
+                            if (bullets[i].Rectangle.Intersects(enemies[j].Rectangle)) // Enemy & Bullet collision
+                            {
+                                bullets.RemoveAt(i);
+                                i--;
+
+                                enemies.RemoveAt(j);
+                            }
+                        }
+                }
+
+                for (int i = 0; i < enemies.Count; i++) // Enemy collision
+                {
+                    if (enemies[i].Rectangle.Intersects(player.Rectangle))
+                        Exit();
                 }
             }
         }
@@ -131,18 +151,19 @@ namespace Platformer
              keyboardState = Keyboard.GetState();
              mouseState = Mouse.GetState();
 
-            if (keyboardState.IsKeyDown(Keys.Escape))
+            if (keyboardState.IsKeyDown(Keys.Escape)) // Exit
                 Exit();
 
-            if (mouseState.X < player.Position.X + 15)
-                isTurnedLeft = true;
+            if (mouseState.X < player.Position.X + 15) // Is the player turned left?
+                isTurnedLeft = true; // Yes
             else
-                isTurnedLeft = false;
+                isTurnedLeft = false; // No
 
-                oldPlayerPos = player.Position;
+                oldPlayerPos = player.Position; // Record the previous player position
 
             player.Update();
-            if (isTurnedLeft == true)
+
+            if (isTurnedLeft == true) // Update glasses position
                 leftGlasses.UpdatePos(new Vector2(player.Position.X, player.Position.Y + 4));
             else
                 rightGlasses.UpdatePos(new Vector2(player.Position.X - 4, player.Position.Y + 4));
@@ -153,7 +174,7 @@ namespace Platformer
             leftGun.UpdatePos(player.Position);
             leftGun.Update();
 
-            PlatformCollision();
+            Collision();
 
             if (mouseState.LeftButton == ButtonState.Pressed && isTurnedLeft == true && bulletCooldown == 0) // Shoot Left
             {
@@ -170,8 +191,9 @@ namespace Platformer
                     leftGun.Position, // Position
                     new Point(18, 8), // Size
                     (float)Math.Atan2(bulletDir.Y, bulletDir.X), // Rotation
-                    new Vector2((float)Math.Cos(bulletRot),
-                                (float)Math.Sin(bulletRot)))); // Direction
+                    new Vector2((float)Math.Cos(bulletRot), (float)Math.Sin(bulletRot)), // Direction
+                    15)); // Speed
+                    
             }
 
             else if (mouseState.LeftButton == ButtonState.Pressed && isTurnedLeft == false && bulletCooldown == 0) // Shoot Right
@@ -182,23 +204,34 @@ namespace Platformer
                 bulletDir.Y = mouseState.Y - rightGun.Position.Y;
                 bulletDir.Normalize();
 
-                bulletRot = (float)Math.Atan2(bulletDir.Y, bulletDir.X);
-
+                bulletRot = (float)Math.Atan2(bulletDir.Y, bulletDir.X); 
                 bullets.Add(new Bullet(
                     bulletTex, // Texture
                     new Vector2(rightGun.Position.X + 26, rightGun.Position.Y), // Position
                     new Point(18, 8), // Size
                     (float)Math.Atan2(bulletDir.Y, bulletDir.X), // Rotation
-                    new Vector2((float)Math.Cos(bulletRot),
-                                (float)Math.Sin(bulletRot)))); // Direction
+                    new Vector2((float)Math.Cos(bulletRot), (float)Math.Sin(bulletRot)), // Direction
+                    15)); // Speed
             }
 
-            if (bulletCooldown > 0)
+            if (bulletCooldown > 0) // Bullet cooldown
                 bulletCooldown--;
 
-            foreach (Bullet bullets in bullets)
+            if (random.Next(120) == 1) // Spawn Chance                                                                                       // Add enemies
+                enemies.Add(new Enemy(
+                    defaultTex, // Texture
+                    new Vector2(random.Next(1920), -100), // Position
+                    new Point(30, 30), // Size
+                    random.Next(2, 6) * 1f / 60f)); // Speed
+
+            foreach (Bullet bullets in bullets) // Move bullets
             {
                 bullets.Move();
+            }
+
+            foreach (Enemy enemies in enemies)
+            {
+                enemies.Move(player.Position);
             }
 
             base.Update(gameTime);
@@ -221,8 +254,12 @@ namespace Platformer
                 platforms.Draw(spriteBatch);
             }
 
-            player.Draw(spriteBatch); // Draw player
+            foreach (Enemy enemies in enemies)
+            {
+                enemies.Draw(spriteBatch);
+            }
 
+            player.Draw(spriteBatch); // Draw player
 
 
             if (isTurnedLeft == true)

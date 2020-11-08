@@ -15,6 +15,7 @@ namespace Platformer
         protected Rectangle rectangle;
         protected float rotation;
         protected Vector2 direction;
+        protected float speed;
 
         public Rectangle Rectangle
         {
@@ -36,6 +37,12 @@ namespace Platformer
             get { return direction; }
             set { direction = value; }
         }
+        public float Speed
+        {
+            get { return speed; }
+            set { speed = value; }
+        }
+
         public virtual void Update() { }
         public virtual void Draw(SpriteBatch spriteBatch) { }
         public virtual void MirrorMap()

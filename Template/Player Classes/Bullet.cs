@@ -13,14 +13,14 @@ namespace Platformer
     {
         Vector2 origin = new Vector2(9, 4);
         Rectangle sourceRectangle = new Rectangle(0, 0, 18, 8);
-        readonly int speed = 15;
-        public Bullet(Texture2D bulletTex, Vector2 bulletPos, Point size, float bulletRot, Vector2 bulletDir)
+        public Bullet(Texture2D bulletTex, Vector2 bulletPos, Point size, float bulletRot, Vector2 bulletDir, float bulletSpeed)
         {
             texture = bulletTex;
             position = bulletPos;
             rectangle = new Rectangle(bulletPos.ToPoint(), size);
             rotation = bulletRot;
             direction = bulletDir;
+            speed = bulletSpeed;
         }
         public void Move()
         {
