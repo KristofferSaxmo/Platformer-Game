@@ -20,10 +20,11 @@ namespace Platformer
 
         Rectangle sourceRectangle = new Rectangle(0, 0, 26, 16);
 
-        public Gun(Texture2D gunTex, Vector2 gunPos)
+        public Gun(Texture2D gunTex, Vector2 gunPos, int gunDamage)
         {
             texture = gunTex;
             position = gunPos;
+            damage = gunDamage;
         }
         public void UpdatePos(Vector2 playerPos)
         {

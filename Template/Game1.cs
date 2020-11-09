@@ -60,8 +60,8 @@ namespace Platformer
             player = new Player(defaultTex, new Vector2(500, 100), new Point(30, 30));
             leftGlasses = new Glasses(glassesLeftTex, new Vector2(500, 100));
             rightGlasses = new Glasses(glassesRightTex, new Vector2(500, 100));
-            rightGun = new Gun(gunRightTex, new Vector2(500, 100));
-            leftGun = new Gun(gunLeftTex, new Vector2(500, 100));
+            rightGun = new Gun(gunRightTex, new Vector2(500, 100), 1);
+            leftGun = new Gun(gunLeftTex, new Vector2(500, 100), 1);
 
             platforms.Add(new Platform(defaultTex, new Vector2(random.Next(50, 200), random.Next(100, 200)), new Point(random.Next(150, 350), 30)));           // Platforms
             platforms.Add(new Platform(defaultTex, new Vector2(random.Next(650, 850), random.Next(100, 200)), new Point(random.Next(150, 350), 30)));          // Platforms
@@ -134,7 +134,12 @@ namespace Platformer
                                 bullets.RemoveAt(i);
                                 i--;
 
-                                enemies.RemoveAt(j);
+                                enemies[j].Health -= leftGun.Damage;
+                                if (enemies[j].Health <= 0)
+                                {
+                                    enemies.RemoveAt(j);
+                                    j--;
+                                }
                             }
                         }
                 }
@@ -217,33 +222,70 @@ namespace Platformer
             if (bulletCooldown > 0) // Bullet cooldown
                 bulletCooldown--;
                                                                                                                                              // Add enemies
+                                                                                                                                             // Small
             if (random.Next(300) == 1) // Spawn Chance                                                                                       // Up
                 enemies.Add(new Enemy(
                     defaultTex, // Texture
                     new Vector2(random.Next(1920), -100), // Position
                     new Point(30, 30), // Size
-                    random.Next(2, 6) * 1f / 60f)); // Speed
+                    random.Next(2, 6) * 1f / 60f, // Speed
+                    1)); // Health
 
             if (random.Next(300) == 1) // Spawn Chance                                                                                       // Left
                 enemies.Add(new Enemy(
                     defaultTex, // Texture
                     new Vector2(-100, random.Next(1080)), // Position
                     new Point(30, 30), // Size
-                    random.Next(2, 6) * 1f / 60f)); // Speed
+                    random.Next(2, 6) * 1f / 60f, // Speed
+                    1)); // Health
 
             if (random.Next(300) == 1) // Spawn Chance                                                                                       // Right
                 enemies.Add(new Enemy(
                     defaultTex, // Texture
                     new Vector2(2020, random.Next(1080)), // Position
                     new Point(30, 30), // Size
-                    random.Next(2, 6) * 1f / 60f)); // Speed
+                    random.Next(2, 6) * 1f / 60f, // Speed
+                    1)); // Health
 
             if (random.Next(300) == 1) // Spawn Chance                                                                                       // Down
                 enemies.Add(new Enemy(
                     defaultTex, // Texture
                     new Vector2(random.Next(1920), 1180), // Position
                     new Point(30, 30), // Size
-                    random.Next(2, 6) * 1f / 60f)); // Speed
+                    random.Next(2, 6) * 1f / 60f, // Speed
+                    1)); // Health
+                                                                                                                                             // Big
+            if (random.Next(3000) == 1) // Spawn Chance                                                                                       // Up
+                enemies.Add(new Enemy(
+                    defaultTex, // Texture
+                    new Vector2(random.Next(1920), -100), // Position
+                    new Point(100, 100), // Size
+                    4 * 1f / 60f, // Speed
+                    10)); // Health
+
+            if (random.Next(3000) == 1) // Spawn Chance                                                                                       // Left
+                enemies.Add(new Enemy(
+                    defaultTex, // Texture
+                    new Vector2(-100, random.Next(1080)), // Position
+                    new Point(100, 100), // Size
+                    4 * 1f / 60f, // Speed
+                    10)); // Health
+
+            if (random.Next(3000) == 1) // Spawn Chance                                                                                       // Right
+                enemies.Add(new Enemy(
+                    defaultTex, // Texture
+                    new Vector2(2020, random.Next(1080)), // Position
+                    new Point(100, 100), // Size
+                    4 * 1f / 60f, // Speed
+                    10)); // Health
+
+            if (random.Next(3000) == 1) // Spawn Chance                                                                                       // Down
+                enemies.Add(new Enemy(
+                    defaultTex, // Texture
+                    new Vector2(random.Next(1920), 1180), // Position
+                    new Point(100, 100), // Size
+                    4 * 1f / 60f, // Speed
+                    10)); // Health
 
             foreach (Bullet bullets in bullets) // Move bullets
             {
@@ -252,7 +294,7 @@ namespace Platformer
 
             foreach (Enemy enemies in enemies)
             {
-                enemies.Move(player.Position);
+                enemies.MoveToPlayer(player.Position);
             }
 
             base.Update(gameTime);

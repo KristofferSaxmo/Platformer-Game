@@ -16,6 +16,8 @@ namespace Platformer
         protected float rotation;
         protected Vector2 direction;
         protected float speed;
+        protected int health;
+        protected int damage;
 
         public Rectangle Rectangle
         {
@@ -41,6 +43,16 @@ namespace Platformer
         {
             get { return speed; }
             set { speed = value; }
+        }
+        public int Health
+        {
+            get { return health; }
+            set { health = value; }
+        }
+        public int Damage
+        {
+            get { return damage; }
+            set { damage = value; }
         }
 
         public virtual void Update() { }

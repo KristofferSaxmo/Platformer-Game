@@ -12,14 +12,15 @@ namespace Platformer
     class Enemy : BaseClass
     {
         Vector2 velocity = Vector2.Zero;
-        public Enemy(Texture2D enemyTex, Vector2 enemyPos, Point size, float enemySpeed)
+        public Enemy(Texture2D enemyTex, Vector2 enemyPos, Point size, float enemySpeed, int enemyHealth)
         {
             texture = enemyTex;
             position = enemyPos;
             rectangle = new Rectangle(enemyPos.ToPoint(), size);
             speed = enemySpeed;
+            health = enemyHealth;
         }
-        public void Move(Vector2 playerPos)
+        public void MoveToPlayer(Vector2 playerPos)
         {
 
             direction.X = playerPos.X - position.X;
