@@ -8,23 +8,26 @@ namespace Platformer
 {
     public class Game1 : Game
     {
+        readonly int NORMAL_ENEMY_HEALTH = 1;
+        readonly int BOSS_ENEMY_HEALTH = 10;
+
+        readonly Point NORMAL_ENEMY_SIZE = new Point(30, 30);
+        readonly Point BOSS_ENEMY_SIZE = new Point(100, 100);
+
         readonly GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
         Player player;
-        Glasses leftGlasses, rightGlasses;
-        Gun leftGun, rightGun;
+        Glasses glasses;
+        Gun gun;
         readonly List<Platform> platforms = new List<Platform>();
         readonly List<Bullet> bullets = new List<Bullet>();
         readonly List<Enemy> enemies = new List<Enemy>();
-        int bulletCooldown = 0;
-
-        float bulletRot;
-        Vector2 bulletDir;
+        readonly List<HealthBar> healthBars = new List<HealthBar>();
 
         Vector2 oldPlayerPos = Vector2.Zero;
         readonly Random random = new Random();
-        Texture2D defaultTex, crosshairTex, gunRightTex, gunLeftTex, bulletTex, glassesRightTex, glassesLeftTex;
+        Texture2D defaultTex, crosshairTex, gunTex, bulletTex, glassesTex;
         MouseState mouseState;
         KeyboardState keyboardState;
         bool isTurnedLeft;
@@ -48,20 +51,16 @@ namespace Platformer
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             crosshairTex = Content.Load<Texture2D>("crosshair");
-            gunRightTex = Content.Load<Texture2D>("gunRight");
-            gunLeftTex = Content.Load<Texture2D>("gunLeft");
-            glassesRightTex = Content.Load<Texture2D>("glassesRight");
-            glassesLeftTex = Content.Load<Texture2D>("glassesLeft");
+            glassesTex = Content.Load<Texture2D>("glassesRight");
+            glassesTex = Content.Load<Texture2D>("glassesLeft");
             bulletTex = Content.Load<Texture2D>("bullet");
 
             defaultTex = new Texture2D(GraphicsDevice, 1, 1);
             defaultTex.SetData(new Color[1] { Color.White });
 
             player = new Player(defaultTex, new Vector2(500, 100), new Point(30, 30));
-            leftGlasses = new Glasses(glassesLeftTex, new Vector2(500, 100));
-            rightGlasses = new Glasses(glassesRightTex, new Vector2(500, 100));
-            rightGun = new Gun(gunRightTex, new Vector2(500, 100), 1);
-            leftGun = new Gun(gunLeftTex, new Vector2(500, 100), 1);
+            gun = new Gun(new Vector2(500, 100), 1, 30);
+            glasses = new Glasses();
 
             platforms.Add(new Platform(defaultTex, new Vector2(random.Next(50, 200), random.Next(100, 200)), new Point(random.Next(150, 350), 30)));           // Platforms
             platforms.Add(new Platform(defaultTex, new Vector2(random.Next(650, 850), random.Next(100, 200)), new Point(random.Next(150, 350), 30)));          // Platforms
@@ -129,15 +128,17 @@ namespace Platformer
                     else
                         for (int j = 0; j < enemies.Count; j++)
                         {
+                            if (i < 0) break; // if bullets < 0, Break
                             if (bullets[i].Rectangle.Intersects(enemies[j].Rectangle)) // Enemy & Bullet collision
                             {
                                 bullets.RemoveAt(i);
                                 i--;
 
-                                enemies[j].Health -= leftGun.Damage;
+                                enemies[j].Health -= gun.Damage;
                                 if (enemies[j].Health <= 0)
                                 {
                                     enemies.RemoveAt(j);
+                                    healthBars.RemoveAt(j);
                                     j--;
                                 }
                             }
@@ -151,6 +152,113 @@ namespace Platformer
                 }
             }
         }
+        public void SpawnEnemies()
+        {
+                                                                                                                                             // Add enemies //
+            if (random.Next(300) == 1) // Spawn Chance                                                                                       // Up // NORMAL //
+            {
+                enemies.Add(new Enemy(
+                    defaultTex, // Texture
+                    new Vector2(random.Next(1920), -100), // Position
+                    NORMAL_ENEMY_SIZE, // Size
+                    random.Next(2, 6) * 1f / 60f, // Speed
+                    NORMAL_ENEMY_HEALTH)); // Health
+
+                AddHealthBar();
+            }
+
+            if (random.Next(300) == 1) // Spawn Chance                                                                                       // Left // NORMAL //
+            {
+                enemies.Add(new Enemy(
+                    defaultTex, // Texture
+                    new Vector2(-100, random.Next(1080)), // Position
+                    NORMAL_ENEMY_SIZE, // Size
+                    random.Next(2, 6) * 1f / 60f, // Speed
+                    NORMAL_ENEMY_HEALTH)); // Health
+
+                AddHealthBar();
+            }
+                
+            if (random.Next(300) == 1) // Spawn Chance                                                                                       // Right // NORMAL //
+            {
+                enemies.Add(new Enemy(
+                    defaultTex, // Texture
+                    new Vector2(2020, random.Next(1080)), // Position
+                    NORMAL_ENEMY_SIZE, // Size
+                    random.Next(2, 6) * 1f / 60f, // Speed
+                    NORMAL_ENEMY_HEALTH)); // Health
+
+                AddHealthBar();
+            }
+                
+            if (random.Next(300) == 1) // Spawn Chance                                                                                       // Down // NORMAL //
+            {
+                enemies.Add(new Enemy(
+                    defaultTex, // Texture
+                    new Vector2(random.Next(1920), 1180), // Position
+                    NORMAL_ENEMY_SIZE, // Size
+                    random.Next(2, 6) * 1f / 60f, // Speed
+                    NORMAL_ENEMY_HEALTH)); // Health
+
+                AddHealthBar();
+            }
+                
+            if (random.Next(3000) == 1) // Spawn Chance                                                                                       // Up // BOSS //
+            {
+                enemies.Add(new Enemy(
+                    defaultTex, // Texture
+                    new Vector2(random.Next(1920), -100), // Position
+                    BOSS_ENEMY_SIZE, // Size
+                    random.Next(2, 4) * 1f / 60f, // Speed
+                    BOSS_ENEMY_HEALTH)); // Health
+
+                AddHealthBar();
+            }
+                
+            if (random.Next(3000) == 1) // Spawn Chance                                                                                       // Left // BOSS //
+            {
+                enemies.Add(new Enemy(
+                    defaultTex, // Texture
+                    new Vector2(-100, random.Next(1080)), // Position
+                    BOSS_ENEMY_SIZE, // Size
+                    random.Next(2, 4) * 1f / 60f, // Speed
+                    BOSS_ENEMY_HEALTH)); // Health
+
+                AddHealthBar();
+            }
+                
+            if (random.Next(3000) == 1) // Spawn Chance                                                                                       // Right // BOSS //
+            {
+                enemies.Add(new Enemy(
+                    defaultTex, // Texture
+                    new Vector2(2020, random.Next(1080)), // Position
+                    BOSS_ENEMY_SIZE, // Size
+                    random.Next(2, 4) * 1f / 60f, // Speed
+                    BOSS_ENEMY_HEALTH)); // Health
+
+                AddHealthBar();
+            }
+
+            if (random.Next(3000) == 1) // Spawn Chance                                                                                       // Down // BOSS //
+            {
+                enemies.Add(new Enemy(
+                    defaultTex, // Texture
+                    new Vector2(random.Next(1920), 1180), // Position
+                    BOSS_ENEMY_SIZE, // Size
+                    random.Next(2, 4) * 1f / 60f, // Speed
+                    BOSS_ENEMY_HEALTH)); // Health
+
+                AddHealthBar();
+            }   
+        }
+        public void AddHealthBar()
+        {
+            healthBars.Add(new HealthBar(
+                    defaultTex,
+                    enemies[enemies.Count - 1].Position,
+                    new Point((int)(enemies[enemies.Count - 1].Rectangle.Width * 0.8), (int)(enemies[enemies.Count - 1].Rectangle.Width * 0.2)),
+                    enemies[enemies.Count - 1].Health));
+        }
         protected override void Update(GameTime gameTime)
         {
              keyboardState = Keyboard.GetState();
@@ -159,142 +267,42 @@ namespace Platformer
             if (keyboardState.IsKeyDown(Keys.Escape)) // Exit
                 Exit();
 
-            if (mouseState.X < player.Position.X + 15) // Is the player turned left?
-                isTurnedLeft = true; // Yes
-            else
-                isTurnedLeft = false; // No
-
-                oldPlayerPos = player.Position; // Record the previous player position
-
             player.Update();
 
-            if (isTurnedLeft == true) // Update glasses position
-                leftGlasses.UpdatePos(new Vector2(player.Position.X, player.Position.Y + 4));
+            if (mouseState.X < player.Position.X + (player.Rectangle.Width) / 2) // Is the player turned left?
+            {
+                isTurnedLeft = true; // Yes
+                gunTex = Content.Load<Texture2D>("gunLeft");
+                glassesTex = Content.Load<Texture2D>("glassesLeft");
+                glasses.Update(new Vector2(player.Position.X, player.Position.Y + 4), glassesTex);
+                gun.Shoot(bullets, bulletTex, 0);
+            }
             else
-                rightGlasses.UpdatePos(new Vector2(player.Position.X - 4, player.Position.Y + 4));
+            {
+                isTurnedLeft = false; // No
+                gunTex = Content.Load<Texture2D>("gunRight");
+                glassesTex = Content.Load<Texture2D>("glassesRight");
+                glasses.Update(new Vector2(player.Position.X - 4, player.Position.Y + 4), glassesTex);
+                gun.Shoot(bullets, bulletTex, gunTex.Width);
+            }
 
-            rightGun.UpdatePos(player.Position);
-            rightGun.Update();
+            oldPlayerPos = player.Position; // Record the previous player position
 
-            leftGun.UpdatePos(player.Position);
-            leftGun.Update();
+            gun.Update(player.Position, gunTex);
 
             Collision();
 
-            if (mouseState.LeftButton == ButtonState.Pressed && isTurnedLeft == true && bulletCooldown == 0) // Shoot Left
-            {
-                bulletCooldown = 30;
-
-                bulletDir.X = mouseState.X - leftGun.Position.X;
-                bulletDir.Y = mouseState.Y - leftGun.Position.Y;
-                bulletDir.Normalize();
-
-                bulletRot = (float)Math.Atan2(bulletDir.Y, bulletDir.X);
-
-                bullets.Add(new Bullet(
-                    bulletTex, // Texture
-                    leftGun.Position, // Position
-                    new Point(18, 8), // Size
-                    (float)Math.Atan2(bulletDir.Y, bulletDir.X), // Rotation
-                    new Vector2((float)Math.Cos(bulletRot), (float)Math.Sin(bulletRot)), // Direction
-                    15)); // Speed
-                    
-            }
-
-            else if (mouseState.LeftButton == ButtonState.Pressed && isTurnedLeft == false && bulletCooldown == 0) // Shoot Right
-            {
-                bulletCooldown = 30;
-
-                bulletDir.X = mouseState.X - rightGun.Position.X - 26;
-                bulletDir.Y = mouseState.Y - rightGun.Position.Y;
-                bulletDir.Normalize();
-
-                bulletRot = (float)Math.Atan2(bulletDir.Y, bulletDir.X); 
-                bullets.Add(new Bullet(
-                    bulletTex, // Texture
-                    new Vector2(rightGun.Position.X + 26, rightGun.Position.Y), // Position
-                    new Point(18, 8), // Size
-                    (float)Math.Atan2(bulletDir.Y, bulletDir.X), // Rotation
-                    new Vector2((float)Math.Cos(bulletRot), (float)Math.Sin(bulletRot)), // Direction
-                    15)); // Speed
-            }
-
-            if (bulletCooldown > 0) // Bullet cooldown
-                bulletCooldown--;
-                                                                                                                                             // Add enemies
-                                                                                                                                             // Small
-            if (random.Next(300) == 1) // Spawn Chance                                                                                       // Up
-                enemies.Add(new Enemy(
-                    defaultTex, // Texture
-                    new Vector2(random.Next(1920), -100), // Position
-                    new Point(30, 30), // Size
-                    random.Next(2, 6) * 1f / 60f, // Speed
-                    1)); // Health
-
-            if (random.Next(300) == 1) // Spawn Chance                                                                                       // Left
-                enemies.Add(new Enemy(
-                    defaultTex, // Texture
-                    new Vector2(-100, random.Next(1080)), // Position
-                    new Point(30, 30), // Size
-                    random.Next(2, 6) * 1f / 60f, // Speed
-                    1)); // Health
-
-            if (random.Next(300) == 1) // Spawn Chance                                                                                       // Right
-                enemies.Add(new Enemy(
-                    defaultTex, // Texture
-                    new Vector2(2020, random.Next(1080)), // Position
-                    new Point(30, 30), // Size
-                    random.Next(2, 6) * 1f / 60f, // Speed
-                    1)); // Health
-
-            if (random.Next(300) == 1) // Spawn Chance                                                                                       // Down
-                enemies.Add(new Enemy(
-                    defaultTex, // Texture
-                    new Vector2(random.Next(1920), 1180), // Position
-                    new Point(30, 30), // Size
-                    random.Next(2, 6) * 1f / 60f, // Speed
-                    1)); // Health
-                                                                                                                                             // Big
-            if (random.Next(3000) == 1) // Spawn Chance                                                                                       // Up
-                enemies.Add(new Enemy(
-                    defaultTex, // Texture
-                    new Vector2(random.Next(1920), -100), // Position
-                    new Point(100, 100), // Size
-                    4 * 1f / 60f, // Speed
-                    10)); // Health
-
-            if (random.Next(3000) == 1) // Spawn Chance                                                                                       // Left
-                enemies.Add(new Enemy(
-                    defaultTex, // Texture
-                    new Vector2(-100, random.Next(1080)), // Position
-                    new Point(100, 100), // Size
-                    4 * 1f / 60f, // Speed
-                    10)); // Health
-
-            if (random.Next(3000) == 1) // Spawn Chance                                                                                       // Right
-                enemies.Add(new Enemy(
-                    defaultTex, // Texture
-                    new Vector2(2020, random.Next(1080)), // Position
-                    new Point(100, 100), // Size
-                    4 * 1f / 60f, // Speed
-                    10)); // Health
-
-            if (random.Next(3000) == 1) // Spawn Chance                                                                                       // Down
-                enemies.Add(new Enemy(
-                    defaultTex, // Texture
-                    new Vector2(random.Next(1920), 1180), // Position
-                    new Point(100, 100), // Size
-                    4 * 1f / 60f, // Speed
-                    10)); // Health
+            SpawnEnemies();
 
             foreach (Bullet bullets in bullets) // Move bullets
             {
                 bullets.Move();
             }
 
-            foreach (Enemy enemies in enemies)
+            for (int i = 0; i < enemies.Count; i++)
             {
-                enemies.MoveToPlayer(player.Position);
+                enemies[i].MoveToPlayer(player.Position);
+                healthBars[i].Update(enemies[i].Position, enemies[i].Rectangle, enemies[i].Health);
             }
 
             base.Update(gameTime);
@@ -317,24 +325,21 @@ namespace Platformer
                 platforms.Draw(spriteBatch);
             }
 
-            foreach (Enemy enemies in enemies)
+            for (int i = 0; i < enemies.Count; i++) // Draw enemies and their health bars
             {
-                enemies.Draw(spriteBatch);
+                enemies[i].Draw(spriteBatch);
+                healthBars[i].Draw(spriteBatch, gun.Damage);
             }
 
             player.Draw(spriteBatch); // Draw player
 
+            glasses.Draw(spriteBatch); // Draw glasses
 
             if (isTurnedLeft == true)
-            {
-                leftGlasses.Draw(spriteBatch);
-                leftGun.DrawLeft(spriteBatch);
-            }
+                gun.DrawLeft(spriteBatch); // Draw left gun
+
             else
-            {
-                rightGlasses.Draw(spriteBatch);
-                rightGun.DrawRight(spriteBatch);
-            }
+                gun.DrawRight(spriteBatch); // Draw right gun
 
             spriteBatch.Draw(crosshairTex, new Vector2(mouseState.X - 10, mouseState.Y - 10), Color.White); // Draw crosshair
 

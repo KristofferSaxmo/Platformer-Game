@@ -10,15 +10,11 @@ namespace Platformer
 {
     class Glasses : BaseClass
     {
-        public Glasses(Texture2D glassesTex, Vector2 glassesPos)
-        {
-            texture = glassesTex;
-            position = glassesPos;
-        }
-        public void UpdatePos(Vector2 playerPos)
+        public Glasses() { }
+        public void Update(Vector2 playerPos, Texture2D glassesTex)
         {
             position = playerPos;
-            rectangle = new Rectangle(position.ToPoint(), rectangle.Size);
+            texture = glassesTex;
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
