@@ -129,6 +129,7 @@ namespace Platformer
                     else
                         for (int j = 0; j < enemies.Count; j++)
                         {
+                            if (i < 0) break; // if bullets < 0, Break
                             if (bullets[i].Rectangle.Intersects(enemies[j].Rectangle)) // Enemy & Bullet collision
                             {
                                 bullets.RemoveAt(i);
