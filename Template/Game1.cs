@@ -266,7 +266,7 @@ namespace Platformer
 
             if (keyboardState.IsKeyDown(Keys.Escape)) // Exit
                 Exit();
-
+            oldPlayerPos = player.Position; // Record the previous player position
             player.Update();
 
             if (mouseState.X < player.Position.X + (player.Rectangle.Width) / 2) // Is the player turned left?
@@ -285,8 +285,6 @@ namespace Platformer
                 glasses.Update(new Vector2(player.Position.X - 4, player.Position.Y + 4), glassesTex);
                 gun.Shoot(bullets, bulletTex, gunTex.Width);
             }
-
-            oldPlayerPos = player.Position; // Record the previous player position
 
             gun.Update(player.Position, gunTex);
 
