@@ -22,7 +22,7 @@ namespace Platformer
         {
             position = new Vector2(
                 enemyPos.X + enemyRec.Width * 0.1f,
-                enemyPos.Y + enemyRec.Height + 5);
+                enemyPos.Y + enemyRec.Height * 1.1f);
 
             rectangle = new Rectangle(position.ToPoint(), rectangle.Size);
             remainingHealthBar = new Rectangle(position.ToPoint(), new Point((rectangle.Width / health) * enemyHealth, rectangle.Height));
