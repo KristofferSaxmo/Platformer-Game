@@ -91,64 +91,62 @@ namespace Platformer
 
         public void Collision()
         {
-            foreach (Platform platforms in platforms)
+            for (int i = 0; i < platforms.Count; i++)
             {
-                if (player.Rectangle.Intersects(platforms.Rectangle) && oldPlayerPos.X + player.Rectangle.Width < platforms.Position.X) // Player collision with left wall
+                if (player.Rectangle.Intersects(platforms[i].Rectangle) && oldPlayerPos.X + player.Rectangle.Width < platforms[i].Position.X) // Player collision with left wall
                 {
                     player.WallCollision();
-                    player.Position = new Vector2(platforms.Position.X - player.Rectangle.Width - 1, player.Position.Y);
-                }
+                    player.Position = new Vector2(platforms[i].Position.X - player.Rectangle.Width - 1, player.Position.Y);
+                } // Platform & Player collision
 
-                else if (player.Rectangle.Intersects(platforms.Rectangle) && oldPlayerPos.X > platforms.Position.X + platforms.Rectangle.Width) // Player collision with right wall
+                else if (player.Rectangle.Intersects(platforms[i].Rectangle) && oldPlayerPos.X > platforms[i].Position.X + platforms[i].Rectangle.Width) // Player collision with right wall
                 {
                     player.WallCollision();
-                    player.Position = new Vector2(platforms.Position.X + platforms.Rectangle.Width + 1, player.Position.Y);
-                }
+                    player.Position = new Vector2(platforms[i].Position.X + platforms[i].Rectangle.Width + 1, player.Position.Y);
+                } // Platform & Player collision
 
-                else if (player.Rectangle.Intersects(platforms.Rectangle) && oldPlayerPos.Y < platforms.Position.Y) // Player collision with floor
+                else if (player.Rectangle.Intersects(platforms[i].Rectangle) && oldPlayerPos.Y < platforms[i].Position.Y) // Player collision with floor
                 {
                     player.FloorCollision();
-                    player.Position = new Vector2(player.Position.X, platforms.Position.Y - player.Rectangle.Height + 1);
-                }
+                    player.Position = new Vector2(player.Position.X, platforms[i].Position.Y - player.Rectangle.Height + 1);
+                } // Platform & Player collision
 
-                else if (player.Rectangle.Intersects(platforms.Rectangle) && oldPlayerPos.Y + player.Rectangle.Height > platforms.Position.Y + platforms.Rectangle.Height) // Player collision with ceiling
+                else if (player.Rectangle.Intersects(platforms[i].Rectangle) && oldPlayerPos.Y + player.Rectangle.Height > platforms[i].Position.Y + platforms[i].Rectangle.Height) // Player collision with ceiling
                 {
                     player.RoofCollision();
-                    player.Position = new Vector2(player.Position.X, platforms.Position.Y + platforms.Rectangle.Height);
-                }
+                    player.Position = new Vector2(player.Position.X, platforms[i].Position.Y + platforms[i].Rectangle.Height);
+                } // Platform & Player collision
 
-                for (int i = 0; i < bullets.Count; i++) // Bullet collision
+                for (int j = 0; j < bullets.Count; j++)
                 {
-                    if (bullets[i].Rectangle.Intersects(platforms.Rectangle)) // Bullet & Platform collision
+                    if (platforms[i].Rectangle.Intersects(bullets[j].Rectangle)) // Platform & Bullet collision
                     {
-                        bullets.RemoveAt(i);
-                        i--;
+                        bullets.RemoveAt(j);
+                        j--;
                     }
-
-                    else
-                        for (int j = 0; j < enemies.Count; j++)
-                        {
-                            if (i < 0) break; // if bullets < 0, Break
-                            if (bullets[i].Rectangle.Intersects(enemies[j].Rectangle)) // Enemy & Bullet collision
-                            {
-                                bullets.RemoveAt(i);
-                                i--;
-
-                                enemies[j].Health -= gun.Damage;
-                                if (enemies[j].Health <= 0)
-                                {
-                                    enemies.RemoveAt(j);
-                                    healthBars.RemoveAt(j);
-                                    j--;
-                                }
-                            }
-                        }
                 }
+            }
 
-                for (int i = 0; i < enemies.Count; i++) // Enemy collision
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                if (enemies[i].Rectangle.Intersects(player.Rectangle)) // Enemy & Player collision
+                    Exit();
+
+                for (int j = 0; j < bullets.Count; j++)
                 {
-                    if (enemies[i].Rectangle.Intersects(player.Rectangle))
-                        Exit();
+                    if (enemies[i].Rectangle.Intersects(bullets[j].Rectangle)) // Enemy & Bullet collision
+                    {
+                        bullets.RemoveAt(j);
+                        j--;
+
+                        enemies[i].Health -= gun.Damage;
+                        if (enemies[i].Health <= 0)
+                        {
+                            enemies.RemoveAt(i);
+                            healthBars.RemoveAt(i);
+                            i--;
+                        }
+                    }
                 }
             }
         }
@@ -292,9 +290,9 @@ namespace Platformer
 
             SpawnEnemies();
 
-            foreach (Bullet bullets in bullets) // Move bullets
+            for (int i = 0; i < bullets.Count; i++) // Move bullets
             {
-                bullets.Move();
+                bullets[i].Move();
             }
 
             for (int i = 0; i < enemies.Count; i++)
@@ -313,14 +311,14 @@ namespace Platformer
 
             spriteBatch.Begin();
 
-            foreach (Bullet bullets in bullets) // Draw bullets
+            for (int i = 0; i < bullets.Count; i++) // Draw bullets
             {
-                bullets.Draw(spriteBatch);
+                bullets[i].Draw(spriteBatch);
             }
 
-            foreach (Platform platforms in platforms) // Draw platforms
+            for (int i = 0; i < platforms.Count; i++) // Draw platforms
             {
-                platforms.Draw(spriteBatch);
+                platforms[i].Draw(spriteBatch);
             }
 
             for (int i = 0; i < enemies.Count; i++) // Draw enemies and their health bars
